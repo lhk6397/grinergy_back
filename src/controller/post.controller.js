@@ -90,13 +90,19 @@ export const uploadPost = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
-  const { title, contents, file } = req.body;
+  const {
+    body: { title, contents, files },
+    params: { postId },
+  } = req;
   try {
-    const post = await Post.findOneAndUpdate({
-      title,
-      contents,
-      file,
-    });
+    const post = await Post.findOneAndUpdate(
+      { _id: postId },
+      {
+        title,
+        contents,
+        files,
+      }
+    );
     return res.status(200).json({
       ok: true,
       post,

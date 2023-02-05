@@ -33,7 +33,7 @@ const store = new MongoStore({
 
 app.use(
   session({
-    name: process.env.COOKIE_NAME || "session",
+    name: process.env.COOKIE_NAME || "SSID",
     secret: process.env.COOKIE_SECRET || "secret",
     resave: false,
     saveUninitialized: false,
@@ -42,7 +42,7 @@ app.use(
     cookie: {
       httpOnly: true, // 변경 필요
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: true,
+      secure: false,
       // sameSite: "none",
       // domain 필요
     },
