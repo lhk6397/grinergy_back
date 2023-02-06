@@ -1,15 +1,13 @@
 import Post from "../models/Post.js";
-import path from "path";
 import fs from "fs";
+const pageSize = 10;
 
 export const getPosts = async (req, res) => {
   try {
-    const {
-      query: { page },
-    } = req;
-    if (!page) throw error;
-    const pageSize = 10;
+    const { page } = req.query;
     const skipPage = (page - 1) * pageSize;
+    if (!page) throw error;
+
     const total = await Post.count({});
     const posts = await Post.find({})
       .sort({ _id: -1 })
@@ -91,7 +89,7 @@ export const uploadPost = async (req, res) => {
 
 export const updatePost = async (req, res) => {
   const {
-    body: { title, contents, files },
+    body: { title, contents, files, deleteFiles },
     params: { postId },
   } = req;
   try {
@@ -100,9 +98,22 @@ export const updatePost = async (req, res) => {
       {
         title,
         contents,
-        files,
       }
     );
+    if (files) {
+      post.files.push(...files);
+      await post.save();
+    }
+    if (deleteFiles) {
+      await post.updateOne({
+        $pull: { files: { fileName: { $in: deleteFiles } } },
+      });
+      deleteFiles.forEach((file) => {
+        fs.unlink("uploads" + "/" + file, (err) => {
+          if (err) throw err;
+        });
+      });
+    }
     return res.status(200).json({
       ok: true,
       post,
@@ -117,9 +128,41 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const { postId } = req.params;
-    await Post.findByIdAndDelete(postId);
+    const post = await Post.findByIdAndDelete(postId);
+    post.files.forEach((file) => {
+      fs.unlink(file.filePath, (err) => {
+        if (err) throw err;
+      });
+    });
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(400).send(err);
+    return res.json({
+      ok: false,
+    });
+  }
+};
+
+export const searchPostByTitle = async (req, res) => {
+  try {
+    const { keyword, page } = req.query;
+    if (!page) throw error;
+    const skipPage = (page - 1) * pageSize;
+    const option = {
+      title: { $regex: keyword, $options: "i" },
+    };
+    const total = await Post.count(option);
+    const posts = await Post.find(option)
+      .sort({ _id: -1 })
+      .limit(pageSize)
+      .skip(skipPage);
+    return res.json({
+      ok: true,
+      posts,
+      total,
+    });
+  } catch (err) {
+    return res.json({
+      ok: false,
+    });
   }
 };

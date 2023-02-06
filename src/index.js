@@ -9,10 +9,16 @@ import { userRouter, postRouter } from "./routes/index.js";
 import https from "https";
 import http from "http";
 import fs from "fs";
+import helmet from "helmet";
+const app = express();
+app.use(helmet({ contentSecurityPolicy: false }));
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+app.disable("x-powered-by");
+const is_test = true;
+let server = undefined;
+const HTTP_PORT = 8001;
+const HTTPS_PORT = 8443;
 
 app.use("/uploads", express.static("uploads"));
 
@@ -56,19 +62,13 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.listen(PORT, async () => {
-  console.log(`Listening on port ${PORT}!`);
-  await connect();
-});
-const is_test = true;
-let server = undefined;
-const HTTP_PORT = 8001;
-const HTTPS_PORT = 8443;
 if (is_test) {
+  await connect();
   server = http.createServer(app).listen(HTTP_PORT, function () {
     console.log("Server on " + HTTP_PORT);
   });
 } else {
+  await connect();
   const options = {
     // letsencrypt로 받은 인증서 경로를 입력해 줍니다.
     ca: fs.readFileSync("/etc/letsencrypt/live/grinergy.co.kr/fullchain.pem"),

@@ -4,6 +4,7 @@ import {
   downloadFile,
   getPost,
   getPosts,
+  searchPostByTitle,
   updatePost,
   uploadFiles,
   uploadPost,
@@ -12,7 +13,8 @@ import upload from "../middleware/multer.js";
 const router = express.Router();
 
 router.route("/").get(getPosts).post(uploadPost);
-router.post("/uploadFiles", upload.array("file", 5), uploadFiles);
+router.route("/search").get(searchPostByTitle);
+router.post("/uploadFiles", upload.array("file"), uploadFiles);
 router.post("/downloadFile", downloadFile);
 router.route("/:postId").get(getPost).post(updatePost).delete(deletePost);
 
