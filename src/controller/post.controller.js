@@ -105,10 +105,16 @@ export const updatePost = async (req, res) => {
       await post.save();
     }
     if (deleteFiles) {
+      let dfs = [];
+      if (Array.isArray(deleteFiles)) {
+        dfs = deleteFiles;
+      } else {
+        dfs.append(deleteFiles);
+      }
       await post.updateOne({
-        $pull: { files: { fileName: { $in: deleteFiles } } },
+        $pull: { files: { fileName: { $in: dfs } } },
       });
-      deleteFiles.forEach((file) => {
+      dfs.forEach((file) => {
         fs.unlink("uploads" + "/" + file, (err) => {
           if (err) throw err;
         });
@@ -119,6 +125,7 @@ export const updatePost = async (req, res) => {
       post,
     });
   } catch (error) {
+    console.log(error);
     return res.json({
       ok: false,
     });
