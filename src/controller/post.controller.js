@@ -109,7 +109,7 @@ export const updatePost = async (req, res) => {
       if (Array.isArray(deleteFiles)) {
         dfs = deleteFiles;
       } else {
-        dfs.append(deleteFiles);
+        dfs.push(deleteFiles);
       }
       await post.updateOne({
         $pull: { files: { fileName: { $in: dfs } } },
@@ -125,7 +125,6 @@ export const updatePost = async (req, res) => {
       post,
     });
   } catch (error) {
-    console.log(error);
     return res.json({
       ok: false,
     });
