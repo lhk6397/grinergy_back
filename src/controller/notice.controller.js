@@ -1,15 +1,15 @@
-import Post from "../models/Post.js";
 import fs from "fs";
+import Notice from "../models/Notice.js";
 const pageSize = 10;
 
-export const getPosts = async (req, res) => {
+export const getNotices = async (req, res) => {
   try {
     const { page } = req.query;
     const skipPage = (page - 1) * pageSize;
     if (!page) throw error;
 
-    const total = await Post.count({});
-    const posts = await Post.find({})
+    const total = await Notice.count({});
+    const posts = await Notice.find({})
       .sort({ _id: -1 })
       .limit(pageSize)
       .skip(skipPage);
@@ -28,10 +28,10 @@ export const getPosts = async (req, res) => {
   }
 };
 
-export const getPost = async (req, res) => {
+export const getNotice = async (req, res) => {
   try {
-    const { postId } = req.params;
-    const post = await Post.findById(postId);
+    const { noticeId } = req.params;
+    const post = await Notice.findById(noticeId);
     if (!post) {
       return res.json({ ok: false });
     }
@@ -68,10 +68,10 @@ export const downloadFile = async (req, res) => {
   res.download(filePath);
 };
 
-export const uploadPost = async (req, res) => {
+export const uploadNotice = async (req, res) => {
   const { title, contents, files } = req.body;
   try {
-    const post = await Post.create({
+    const post = await Notice.create({
       title,
       contents,
       files,
@@ -87,14 +87,14 @@ export const uploadPost = async (req, res) => {
   }
 };
 
-export const updatePost = async (req, res) => {
+export const updateNotice = async (req, res) => {
   const {
     body: { title, contents, files, deleteFiles },
-    params: { postId },
+    params: { noticeId },
   } = req;
   try {
-    const post = await Post.findOneAndUpdate(
-      { _id: postId },
+    const post = await Notice.findOneAndUpdate(
+      { _id: noticeId },
       {
         title,
         contents,
@@ -131,10 +131,10 @@ export const updatePost = async (req, res) => {
   }
 };
 
-export const deletePost = async (req, res) => {
+export const deleteNotice = async (req, res) => {
   try {
-    const { postId } = req.params;
-    const post = await Post.findByIdAndDelete(postId);
+    const { noticeId } = req.params;
+    const post = await Notice.findByIdAndDelete(noticeId);
     post.files.forEach((file) => {
       fs.unlink(file.filePath, (err) => {
         if (err) throw err;
@@ -148,7 +148,7 @@ export const deletePost = async (req, res) => {
   }
 };
 
-export const searchPostByTitle = async (req, res) => {
+export const searchNoticeByTitle = async (req, res) => {
   try {
     const { keyword, page } = req.query;
     if (!page) throw error;
@@ -156,8 +156,8 @@ export const searchPostByTitle = async (req, res) => {
     const option = {
       title: { $regex: keyword, $options: "i" },
     };
-    const total = await Post.count(option);
-    const posts = await Post.find(option)
+    const total = await Notice.count(option);
+    const posts = await Notice.find(option)
       .sort({ _id: -1 })
       .limit(pageSize)
       .skip(skipPage);

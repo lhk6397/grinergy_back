@@ -1,4 +1,5 @@
 import userRouter from "./user.routes.js";
-import postRouter from "./post.routes.js";
+import noticeRouter from "./notice.routes.js";
+import newsRouter from "./news.routes.js";
 
-export { userRouter, postRouter };
+export { userRouter, noticeRouter, newsRouter };

@@ -12,8 +12,9 @@ const fileSchema = new Schema({
   },
 });
 
-const postSchema = new Schema(
+const newsSchema = new Schema(
   {
+    previewImg: fileSchema,
     title: {
       type: String,
       required: true,
@@ -22,9 +23,8 @@ const postSchema = new Schema(
       type: String,
       required: true,
     },
-    files: [fileSchema],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Post", postSchema);
+export default mongoose.model("News", newsSchema);

@@ -63,10 +63,15 @@ export const login = async (req, res) => {
       userId: foundUser._id,
       level: foundUser.level,
     };
-    return res.json({
-      ok: true,
-      userId: foundUser._id,
-      level: foundUser.level,
+    req.session.save((err) => {
+      if (err) {
+        console.log(err);
+      }
+      return res.json({
+        ok: true,
+        userId: foundUser._id,
+        level: foundUser.level,
+      });
     });
   } catch (error) {
     return res.json({

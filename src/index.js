@@ -5,7 +5,7 @@ import ExpressMongoSanitize from "express-mongo-sanitize";
 import MongoStore from "connect-mongo";
 import dotenv from "dotenv";
 import session from "express-session";
-import { userRouter, postRouter } from "./routes/index.js";
+import { userRouter, noticeRouter, newsRouter } from "./routes/index.js";
 import https from "https";
 import http from "http";
 import fs from "fs";
@@ -56,7 +56,8 @@ app.use(
 );
 
 app.use("/api/user", userRouter);
-app.use("/api/post", postRouter);
+app.use("/api/notice", noticeRouter);
+app.use("/api/news", newsRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

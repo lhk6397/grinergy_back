@@ -5,7 +5,6 @@ import {
   logout,
   register,
 } from "../controller/user.controller.js";
-// import isAuthMiddleware from "../middleware/isAuthMiddleware";
 const router = express.Router();
 
 router.post("/register", register);
