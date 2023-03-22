@@ -5,11 +5,12 @@ import {
   logout,
   register,
 } from "../controller/user.controller.js";
+import catchAsync from "../utils/catchAsync.js";
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
+router.post("/register", catchAsync(register));
+router.post("/login", catchAsync(login));
 router.get("/auth", auth);
-router.post("/logout", logout);
+router.post("/logout", catchAsync(logout));
 
 export default router;

@@ -10,6 +10,7 @@ import https from "https";
 import http from "http";
 import fs from "fs";
 import helmet from "helmet";
+import errHandler from "./middleware/errHandler.js";
 const app = express();
 app.use(helmet({ contentSecurityPolicy: false }));
 dotenv.config();
@@ -59,9 +60,7 @@ app.use("/api/user", userRouter);
 app.use("/api/notice", noticeRouter);
 app.use("/api/news", newsRouter);
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.use(errHandler);
 
 if (is_test) {
   await connect();
