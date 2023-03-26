@@ -16,7 +16,7 @@ app.use(helmet({ contentSecurityPolicy: false }));
 dotenv.config();
 
 app.disable("x-powered-by");
-const is_test = true;
+const isTest = process.env.STATUS === "DEV" ? true : false;
 let server = undefined;
 const HTTP_PORT = 8001;
 const HTTPS_PORT = 8443;
@@ -47,9 +47,9 @@ app.use(
     proxy: true,
     store,
     cookie: {
-      httpOnly: true, // 변경 필요
+      httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: false,
+      secure: process.env.STATUS === "DEV" ? false : true,
       // sameSite: "none",
       // domain 필요
     },
@@ -62,7 +62,7 @@ app.use("/api/news", newsRouter);
 
 app.use(errHandler);
 
-if (is_test) {
+if (isTest) {
   await connect();
   server = http.createServer(app).listen(HTTP_PORT, function () {
     console.log("Server on " + HTTP_PORT);
