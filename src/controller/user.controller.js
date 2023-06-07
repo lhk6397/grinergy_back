@@ -1,6 +1,6 @@
 import * as bcrypt from "bcrypt";
 import User from "../models/User.js";
-import ExpressError from "../utils/expressError.js";
+import ExpressError from "../libs/expressError.js";
 
 export const register = async (req, res) => {
   const { userId, password } = req.body;
@@ -41,6 +41,7 @@ export const login = async (req, res) => {
     userId: foundUser._id,
     level: foundUser.level,
   };
+
   req.session.save((err) => {
     if (err) throw err;
     return res.status(200).json({

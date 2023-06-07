@@ -1,9 +1,10 @@
-import ExpressError from "../utils/expressError.js";
+import logger from "../logger.js";
+import ExpressError from "../libs/expressError.js";
 import { MulterError } from "multer";
 
 const errHandler = (err, req, res, next) => {
   const { stack, statusCode = 500, message = "Server Error" } = err;
-  console.log(stack);
+  logger.error(stack);
   if (err instanceof ExpressError) {
     return res.status(statusCode).json({
       ok: false,

@@ -9,17 +9,27 @@ import {
   uploadNews,
 } from "../controller/news.controller.js";
 import upload from "../middleware/multer.js";
-import catchAsync from "../utils/catchAsync.js";
+import catchAsync from "../libs/catchAsync.js";
+import { isLoggedIn } from "../middleware/auth.middleware.js";
+import Validator from "../middleware/Validator.middleware.js";
 
 const router = express.Router();
 
-router.route("/").get(catchAsync(getNewss)).post(catchAsync(uploadNews));
+router
+  .route("/")
+  .get(catchAsync(getNewss))
+  .post(isLoggedIn, Validator("uploadNewsSchema"), catchAsync(uploadNews));
 router.route("/search").get(catchAsync(searchNewsByTitle));
-router.post("/uploadImage", upload.single("file"), catchAsync(uploadImage));
+router.post(
+  "/uploadImage",
+  upload.single("file"),
+  isLoggedIn,
+  catchAsync(uploadImage)
+);
 router
   .route("/:newsId")
   .get(catchAsync(getNews))
-  .post(catchAsync(updateNews))
-  .delete(catchAsync(deleteNews));
+  .post(isLoggedIn, Validator("updateNewsSchema"), catchAsync(updateNews))
+  .delete(isLoggedIn, catchAsync(deleteNews));
 
 export default router;

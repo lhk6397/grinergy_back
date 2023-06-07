@@ -1,6 +1,6 @@
 import fs from "fs";
 import Notice from "../models/Notice.js";
-import ExpressError from "../utils/expressError.js";
+import ExpressError from "../libs/expressError.js";
 const pageSize = 10;
 
 export const getNotices = async (req, res) => {
@@ -32,7 +32,6 @@ export const getNotice = async (req, res) => {
 };
 
 export const uploadFiles = async (req, res) => {
-  console.log(req.files.length);
   if (!req.files.length) throw new ExpressError("선택된 파일이 없습니다.", 422);
   const fdata = [];
   req.files.map((file) =>
@@ -47,7 +46,7 @@ export const uploadFiles = async (req, res) => {
 
 export const downloadFile = async (req, res) => {
   const { filePath } = req.body;
-  res.download(filePath);
+  return res.download(filePath);
 };
 
 export const uploadNotice = async (req, res) => {

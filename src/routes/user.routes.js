@@ -5,12 +5,25 @@ import {
   logout,
   register,
 } from "../controller/user.controller.js";
-import catchAsync from "../utils/catchAsync.js";
+import catchAsync from "../libs/catchAsync.js";
+import { isLoggedIn, isNotLoggedIn } from "../middleware/auth.middleware.js";
+import Validator from "../middleware/Validator.middleware.js";
+
 const router = express.Router();
 
-router.post("/register", catchAsync(register));
-router.post("/login", catchAsync(login));
-router.get("/auth", auth);
-router.post("/logout", catchAsync(logout));
+router.post(
+  "/register",
+  isNotLoggedIn,
+  Validator("loginSchema"),
+  catchAsync(register)
+);
+router.post(
+  "/login",
+  isNotLoggedIn,
+  Validator("loginSchema"),
+  catchAsync(login)
+);
+router.get("/auth", isLoggedIn, auth);
+router.post("/logout", isLoggedIn, catchAsync(logout));
 
 export default router;

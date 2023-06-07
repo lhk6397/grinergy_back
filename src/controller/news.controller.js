@@ -1,7 +1,7 @@
 import fs from "fs";
 import News from "../models/News.js";
-import ExpressError from "../utils/expressError.js";
-import ExperssError from "../utils/expressError.js";
+import ExpressError from "../libs/expressError.js";
+import ExperssError from "../libs/expressError.js";
 const pageSize = 10;
 
 export const getNewss = async (req, res) => {
@@ -42,6 +42,7 @@ export const uploadImage = async (req, res) => {
 };
 
 export const uploadNews = async (req, res) => {
+  console.log(req.body);
   const { title, url, contents, previewImg } = req.body;
   const post = await News.create({
     title,

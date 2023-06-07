@@ -1,25 +1,35 @@
 import express from "express";
-import connect from "./db.js";
 import cors from "cors";
 import ExpressMongoSanitize from "express-mongo-sanitize";
 import MongoStore from "connect-mongo";
 import dotenv from "dotenv";
 import session from "express-session";
-import { userRouter, noticeRouter, newsRouter } from "./routes/index.js";
 import https from "https";
 import http from "http";
 import fs from "fs";
 import helmet from "helmet";
+import morgan from "morgan";
+import hpp from "hpp";
+
+import connect from "./db.js";
+import { userRouter, noticeRouter, newsRouter } from "./routes/index.js";
 import errHandler from "./middleware/errHandler.js";
-const app = express();
-app.use(helmet({ contentSecurityPolicy: false }));
+
 dotenv.config();
+const app = express();
+app.set("port", process.env.PORT || 8001);
+const isTest = process.env.NODE_ENV === "production" ? false : true;
+
+if (!isTest) {
+  app.use(morgan("combined"));
+  app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(hpp());
+} else {
+  app.use(morgan("dev"));
+}
 
 app.disable("x-powered-by");
-const isTest = process.env.STATUS === "DEV" ? true : false;
 let server = undefined;
-const HTTP_PORT = 8001;
-const HTTPS_PORT = 8443;
 
 app.use("/uploads", express.static("uploads"));
 
@@ -28,7 +38,9 @@ app.use(express.json());
 app.use(ExpressMongoSanitize());
 app.use(
   cors({
-    origin: ["https://www.grinergy.co.kr"],
+    origin: !isTest
+      ? ["https://www.grinergy.co.kr", "https://www.grinergy.tech"]
+      : "http://localhost:3000",
     credentials: true,
   })
 );
@@ -49,23 +61,32 @@ app.use(
     cookie: {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: process.env.STATUS === "DEV" ? false : true,
-      // sameSite: "none",
-      // domain 필요
+      secure: isTest ? false : true,
     },
   })
 );
 
+// ROUTER
 app.use("/api/user", userRouter);
 app.use("/api/notice", noticeRouter);
 app.use("/api/news", newsRouter);
 
+// 404 ERROR
+app.use((req, res, next) => {
+  const error = new ExpressError(
+    `${req.method} ${req.url} 라우터가 없습니다.`,
+    404
+  );
+  next(error);
+});
+
+// ERROR HANDLER
 app.use(errHandler);
 
-if (isTest) {
+if (!isTest) {
   await connect();
-  server = http.createServer(app).listen(HTTP_PORT, function () {
-    console.log("Server on " + HTTP_PORT);
+  server = http.createServer(app).listen(app.get("port"), function () {
+    console.log("Server on " + app.get("port"));
   });
 } else {
   await connect();
@@ -75,8 +96,9 @@ if (isTest) {
     key: fs.readFileSync("/etc/letsencrypt/live/grinergy.co.kr/privkey.pem"),
     cert: fs.readFileSync("/etc/letsencrypt/live/grinergy.co.kr/cert.pem"),
   };
-  server = https.createServer(options, app).listen(HTTPS_PORT, function () {
-    console.log("Server on " + HTTPS_PORT);
-    //scheduleAlarm();
-  });
+  server = https
+    .createServer(options, app)
+    .listen(app.get("port"), function () {
+      console.log("Server on " + app.get("port"));
+    });
 }
