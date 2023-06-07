@@ -12,7 +12,7 @@ import {
 import upload from "../middleware/multer.js";
 import catchAsync from "../libs/catchAsync.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
-import Validator from "../middleware/Validator.middleware.js";
+import Validator from "../middleware/validator.middleware.js";
 const router = express.Router();
 
 router

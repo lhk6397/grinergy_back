@@ -83,7 +83,7 @@ app.use((req, res, next) => {
 // ERROR HANDLER
 app.use(errHandler);
 
-if (!isTest) {
+if (isTest) {
   await connect();
   server = http.createServer(app).listen(app.get("port"), function () {
     console.log("Server on " + app.get("port"));
