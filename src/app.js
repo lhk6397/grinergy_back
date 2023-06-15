@@ -92,9 +92,9 @@ if (isTest) {
   await connect();
   const options = {
     // letsencrypt로 받은 인증서 경로를 입력해 줍니다.
-    ca: fs.readFileSync("/etc/letsencrypt/live/grinergy.co.kr/fullchain.pem"),
-    key: fs.readFileSync("/etc/letsencrypt/live/grinergy.co.kr/privkey.pem"),
-    cert: fs.readFileSync("/etc/letsencrypt/live/grinergy.co.kr/cert.pem"),
+    ca: fs.readFileSync("/etc/letsencrypt/live/grinergy.tech/fullchain.pem"),
+    key: fs.readFileSync("/etc/letsencrypt/live/grinergy.tech/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/grinergy.tech/cert.pem"),
   };
   server = https
     .createServer(options, app)

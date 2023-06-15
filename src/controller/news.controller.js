@@ -93,7 +93,7 @@ export const deleteNews = async (req, res) => {
 
 export const searchNewsByTitle = async (req, res) => {
   const { keyword, page } = req.query;
-  if (!page) throw new ExpressError("검색된 결과거 없습니다.", 422);
+  if (!page) throw new ExpressError("검색된 결과가 없습니다.", 422);
   const skipPage = (page - 1) * pageSize;
   const option = {
     title: { $regex: keyword, $options: "i" },
@@ -103,7 +103,7 @@ export const searchNewsByTitle = async (req, res) => {
     .sort({ _id: -1 })
     .limit(pageSize)
     .skip(skipPage);
-  if (!posts) throw new ExpressError("검색된 결과거 없습니다.", 422);
+  if (!posts) throw new ExpressError("검색된 결과가 없습니다.", 422);
   return res.json({
     ok: true,
     posts,

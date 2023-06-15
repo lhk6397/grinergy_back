@@ -65,6 +65,7 @@ export const auth = (req, res) => {
   }
   return res.json({
     ok: false,
+    isAuth: false,
   });
 };
 

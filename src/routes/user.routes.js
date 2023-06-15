@@ -23,7 +23,7 @@ router.post(
   Validator("loginSchema"),
   catchAsync(login)
 );
-router.get("/auth", isLoggedIn, auth);
+router.get("/auth", auth);
 router.post("/logout", isLoggedIn, catchAsync(logout));
 
 export default router;
