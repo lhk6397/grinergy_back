@@ -1,8 +1,10 @@
 import fs from "fs";
+import {
+  default as ExperssError,
+  default as ExpressError,
+} from "../libs/expressError.js";
 import News from "../models/News.js";
-import ExpressError from "../libs/expressError.js";
-import ExperssError from "../libs/expressError.js";
-const pageSize = 10;
+const pageSize = 9;
 
 export const getNewss = async (req, res) => {
   const { page } = req.query;
